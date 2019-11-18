@@ -2,13 +2,13 @@
 #include <M5Stack.h>
 #include <WiFi.h>
 #include <ArduinoJson.h>
-
+#include "utility/MPU6886.h"
 
 // WiFi
-const char* WIFI_SSID = "ssid";
-const char* WIFI_PASSWROD= "password";
+const char* WIFI_SSID = "WIFI_SSID"; 
+const char* WIFI_PASSWROD= "WIFI_PASSWROD";
 
-// WEB API
+// WEB API 
 const String citycode = "citycode";
 const String baseurl = "http://api.openweathermap.org/data/2.5/forecast";
 const String apikey = "apikey";
@@ -23,14 +23,19 @@ const String rainy = "Rain";
 //const String rainyArr[] = {"当てにしてはいけません。", "私の答えは、ノーです。", "私の資料／情報源によるとダメだそうです。", "幸先はあまり良くありません。", "非常に怪しい／危なっかしいです。"};
 
 // en
-const String sunnyArr[] = {"It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely on it", "As I see it, yes"};
-const String cloudyArr[] = {"Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again"};
-const String rainyArr[] = {"Don't count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"};
+//const String sunnyArr[] = {"It is certain", "It is decidedly so", "Without a doubt", "Yes definitely", "You may rely on it", "As I see it, yes"};
+//const String cloudyArr[] = {"Most likely", "Outlook good", "Yes", "Signs point to yes", "Reply hazy try again", "Ask again later", "Better not tell you now", "Cannot predict now", "Concentrate and ask again"};
+//const String rainyArr[] = {"Don't count on it", "My reply is no", "My sources say no", "Outlook not so good", "Very doubtful"};
+
+const char* imgNameArr[] = {"/title.jpg", "/answer_01.jpg", "/answer_02.jpg", "/answer_03.jpg", "/answer_04.jpg", "/answer_05.jpg", "/answer_06.jpg", "/answer_07.jpg", "/answer_08.jpg", "/answer_09.jpg",
+"/answer_10.jpg", "/answer_11.jpg", "/answer_12.jpg", "/answer_13.jpg", "/answer_14.jpg", "/answer_15.jpg", "/answer_16.jpg", "/answer_17.jpg", "/answer_18.jpg", "/answer_19.jpg", "/answer_20.jpg"};
 
 unsigned int counter;
 
-void updateWeather() {
+MPU6886 IMU;
 
+void updateWeather() {
+  
   HTTPClient http;
   String url = baseurl + "?id=" + citycode + "&APPID=" + apikey;
   http.begin(url);
@@ -42,18 +47,16 @@ void updateWeather() {
     deserializeJson(doc, payload);
     JsonVariant tomorrow = doc["list"][0];
     String weather = tomorrow["weather"][0]["main"];
-
-    M5.Lcd.setCursor(80,100);
-
+        
     if (weather == sunny) {
-      M5.Lcd.drawJpgFile(SD, "/sunny.jpg", 0, 80);
-      M5.Lcd.print(sunnyArr[random(6)]);
+      
+      M5.Lcd.drawJpgFile(SD, imgNameArr[random(1, 6)], 0, 0);
     } else if (weather == cloudy) {
-      M5.Lcd.drawJpgFile(SD, "/cloudy.jpg", 0, 80);
-      M5.Lcd.print(cloudyArr[random(8)]);
+      
+      M5.Lcd.drawJpgFile(SD, imgNameArr[random(7, 15)], 0, 0);
     } else if (weather == rainy) {
-      M5.Lcd.drawJpgFile(SD, "/rainy.jpg", 0, 80);
-      M5.Lcd.print(rainyArr[random(4)]);
+      
+      M5.Lcd.drawJpgFile(SD, imgNameArr[random(16, 20)], 0, 0);
     }
     counter++;
   } else {
@@ -65,9 +68,8 @@ void updateWeather() {
 
 void setup() {
   // put your setup code here, to run once:
-
+  
   M5.begin();
-  M5.Lcd.setBrightness(30);
   M5.Lcd.clear();
   M5.Lcd.setTextSize(2);
 
@@ -78,8 +80,8 @@ void setup() {
 //  M5.Lcd.loadFont(fileName, SD);
 
   // Display title image
-  M5.Lcd.drawJpgFile(SD, "/title.jpg", 0, 0);
-
+  M5.Lcd.drawJpgFile(SD, imgNameArr[0], 0, 0);
+  
   // WiFi Setup
   M5.Lcd.print("Connecting to WiFi");
   WiFi.mode(WIFI_STA);
@@ -90,8 +92,8 @@ void setup() {
     M5.Lcd.print('.');
   }
   M5.Lcd.println("...Connected!");
-  delay(3000);
-
+  delay(2000);
+  
   M5.Lcd.fillScreen(0x3186);
   counter = 0;
 }
