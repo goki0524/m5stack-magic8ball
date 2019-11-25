@@ -73,7 +73,7 @@ bool shakeCheck() {
   M5.IMU.getAhrsData(&pitch,&roll,&yaw);
   M5.IMU.getTempData(&temp);
         
-  if ( abs(accX) > 1.2 && abs(accY) > 1.2 && abs(accZ) > 1.2) {
+  if ( abs(accX) > 1.0 && abs(accY) > 1.0 && abs(accZ) > 1.0) {
     return true;
     digitalWrite(MoPin, HIGH);
   }
@@ -118,19 +118,18 @@ void setup() {
   }
   M5.Lcd.println("...Connected!");
   delay(2000);
-
+  
+  M5.Lcd.println("Shake Start !!");
   counter = 0;
 }
 
 void loop() {
 
-  if (counter == 0) {
-    M5.Lcd.println("Shake Start !!");
-    if (shakeCheck()) {
-      updateWeather();
-     }
+  if (counter == 0 && shakeCheck()) {
+    
+    updateWeather();
   }
   
-  delay(5000);
+  delay(3000);
 
 }
