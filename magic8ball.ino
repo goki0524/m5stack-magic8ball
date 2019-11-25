@@ -68,20 +68,22 @@ void updateWeather() {
 }
 
 bool shakeCheck() {
-  M5.IMU.getGyroData(&gyroX,&gyroY,&gyroZ);
-  M5.IMU.getAccelData(&accX,&accY,&accZ);
-  M5.IMU.getAhrsData(&pitch,&roll,&yaw);
-  M5.IMU.getTempData(&temp);
-        
-  if ( abs(accX) > 1.0 && abs(accY) > 1.0 && abs(accZ) > 1.0) {
-    return true;
-    digitalWrite(MoPin, HIGH);
+
+  while(true) {
+    M5.IMU.getGyroData(&gyroX,&gyroY,&gyroZ);
+    M5.IMU.getAccelData(&accX,&accY,&accZ);
+    M5.IMU.getAhrsData(&pitch,&roll,&yaw);
+    M5.IMU.getTempData(&temp);
+          
+    if ( abs(accX) > 1.0 && abs(accY) > 1.0 && abs(accZ) > 1.0 ) {
+      return true;
+      digitalWrite(MoPin, HIGH);
+    }
+    else {
+      digitalWrite(MoPin, LOW);
+    }
+    delay(1);
   }
-  else {
-    digitalWrite(MoPin, LOW);
-  }
-  delay(1);
-  
 }
 
 
